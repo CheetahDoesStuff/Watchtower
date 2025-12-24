@@ -16,12 +16,14 @@ class Meter(QWidget):
         self.big_font.setBold(True)
         self.name.setFont(self.big_font)
 
-        self.percentage = QLabel("  0%")
+        self.percentage = QLabel("None")
         self.smol_font = QFont()
         self.smol_font.setPointSize(6)
         self.percentage.setFont(self.smol_font)
 
         self.setFixedHeight(30)
+        self.name.setMinimumWidth(80)
+        self.percentage.setMinimumWidth(80)
 
         self.progress_bar.setSizePolicy(
             self.progress_bar.sizePolicy().horizontalPolicy(),
@@ -39,11 +41,12 @@ class Meter(QWidget):
         main_layout = QHBoxLayout()
         main_layout.addLayout(labels_layout)
         main_layout.addWidget(self.progress_bar)
-        main_layout.setStretch(0, 1)
-        main_layout.setStretch(1, 4)
+        main_layout.setStretch(0, 0)
+        main_layout.setStretch(1, 1)
 
         main_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(main_layout)
 
     def set(self, val):
         self.value = min(val, 100)
+        self.progress_bar.setValue(self.value)
