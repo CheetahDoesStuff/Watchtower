@@ -27,8 +27,8 @@ class Section(QGroupBox):
         """
         )
 
-    def addWidget(self, widget):
-        self.layout().addWidget(widget)
+    def addWidget(self, widget, stretch=0):
+        self.layout().addWidget(widget, stretch)
 
     def addItem(self, item):
         self.layout().addItem(item)

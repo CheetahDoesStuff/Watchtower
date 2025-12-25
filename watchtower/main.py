@@ -10,7 +10,6 @@ from PyQt6.QtWidgets import (
     QMainWindow,
     QVBoxLayout,
     QWidget,
-    QSpacerItem,
     QSizePolicy,
 )
 
@@ -28,14 +27,16 @@ class MainWindow(QMainWindow):
         self.sections = [Topbar(), UsageSection(), DiskSection(), TaskSection()]
 
         for widget in self.sections:
-            widget.setSizePolicy(
-                widget.sizePolicy().horizontalPolicy(), QSizePolicy.Policy.Fixed
-            )
+            if type(widget) is type(TaskSection()):
+                widget.setSizePolicy(
+                    widget.sizePolicy().horizontalPolicy(),
+                    widget.sizePolicy().verticalPolicy(),
+                )
+            else:
+                widget.setSizePolicy(
+                    widget.sizePolicy().horizontalPolicy(), QSizePolicy.Policy.Fixed
+                )
             central_layout.addWidget(widget)
-
-        central_layout.addItem(
-            QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-        )
 
         self.setCentralWidget(central)
 
