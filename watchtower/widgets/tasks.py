@@ -119,8 +119,6 @@ class TaskSection(Section):
         for name, pids in grouped.items():
             task_widget = Task(name, pids)
             self.task_widgets.append(task_widget)
-            task_widget.destroyed.connect(lambda: print("Widget is destroyed"))
-            print("new widget!")
             self.task_layout.addWidget(task_widget)
 
         self.task_layout.addStretch()
@@ -134,8 +132,3 @@ class TaskSection(Section):
     def focusOutEvent(self, event):  # ty:ignore[invalid-method-override]
         super().focusOutEvent(event)
         QTimer.singleShot(0, self.update_tasks)
-
-    def debug(self):
-        print(
-            f"current amount of widgets in taskSection layout: {self.layout().count()}"  # ty:ignore[possibly-missing-attribute]
-        )
