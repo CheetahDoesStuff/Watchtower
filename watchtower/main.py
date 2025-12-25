@@ -3,6 +3,7 @@ import psutil
 
 from watchtower.widgets.meter import Meter
 from watchtower.widgets.top import Topbar
+from watchtower.widgets.section import Section
 
 from PyQt6.QtWidgets import (
     QApplication,
@@ -11,7 +12,6 @@ from PyQt6.QtWidgets import (
     QWidget,
     QSizePolicy,
     QSpacerItem,
-    QFrame,
 )
 from PyQt6.QtCore import QTimer
 
@@ -27,22 +27,17 @@ class MainWindow(QMainWindow):
         central.setLayout(central_layout)
         central_layout.addWidget(Topbar())
 
-        usage_layout = QVBoxLayout()
+        usage_group = Section("Usage")
 
         self.meters = [Meter("CPU"), Meter("RAM")]
         for meter in self.meters:
-            usage_layout.addWidget(meter)
+            usage_group.addWidget(meter)
 
-        usage_layout.addItem(
+        usage_group.addItem(
             QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
         )
 
-        usage_frame = QFrame(self)
-        usage_frame.setFrameShape(QFrame.Shape.Box)
-        usage_frame.setFrameShadow(QFrame.Shadow.Raised)
-        usage_frame.setLayout(usage_layout)
-
-        central_layout.addWidget(usage_frame)
+        central_layout.addWidget(usage_group)
         self.setCentralWidget(central)
 
         timer = QTimer(self)
