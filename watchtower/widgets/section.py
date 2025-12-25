@@ -1,11 +1,15 @@
-from PyQt6.QtWidgets import QGroupBox, QVBoxLayout
+from PyQt6.QtWidgets import QGroupBox, QVBoxLayout, QHBoxLayout
 
 
 class Section(QGroupBox):
-    def __init__(self, title: str):
+    def __init__(self, title: str, horizontal: bool = False):
         super().__init__(title)
 
-        layout = QVBoxLayout()
+        if horizontal:
+            layout = QHBoxLayout()
+        else:
+            layout = QVBoxLayout()
+
         self.setLayout(layout)
 
         self.setStyleSheet(
