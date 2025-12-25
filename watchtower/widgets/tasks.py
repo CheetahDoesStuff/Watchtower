@@ -76,6 +76,13 @@ class TaskSection(Section):
         self.task_area.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
         )
+        self.task_area.setStyleSheet(
+            """
+        QScrollArea {
+        border: none;
+        }
+        """
+        )
 
         self.task_container = QWidget()
         self.task_layout = QVBoxLayout(self.task_container)
@@ -120,15 +127,15 @@ class TaskSection(Section):
         self.task_area.setUpdatesEnabled(True)
         self.task_area.update()
 
-    def focusInEvent(self, event):
+    def focusInEvent(self, event):  # ty:ignore[invalid-method-override]
         super().focusInEvent(event)
         QTimer.singleShot(0, self.update_tasks)
 
-    def focusOutEvent(self, event):
+    def focusOutEvent(self, event):  # ty:ignore[invalid-method-override]
         super().focusOutEvent(event)
         QTimer.singleShot(0, self.update_tasks)
 
     def debug(self):
         print(
-            f"current amount of widgets in taskSection layout: {self.layout().count()}"
+            f"current amount of widgets in taskSection layout: {self.layout().count()}"  # ty:ignore[possibly-missing-attribute]
         )

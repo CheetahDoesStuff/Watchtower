@@ -28,7 +28,7 @@ class Section(QGroupBox):
         )
 
     def addWidget(self, widget, stretch=0):
-        self.layout().addWidget(widget, stretch)
+        self.layout().addWidget(widget, stretch)  # ty:ignore[too-many-positional-arguments, possibly-missing-attribute]
 
     def addItem(self, item):
-        self.layout().addItem(item)
+        self.layout().addItem(item)  # ty:ignore[possibly-missing-attribute]
