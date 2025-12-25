@@ -1,5 +1,4 @@
 from watchtower.widgets.section import Section
-
 import psutil
 
 from PyQt6.QtCore import QTimer
@@ -19,7 +18,6 @@ class Task(QFrame):
 
         self.name = name
         self.pids = pids
-        print(f"[Task INIT] {name} -> PIDs: {pids}")
 
         self.main_layout = QHBoxLayout()
 
@@ -39,7 +37,7 @@ class Task(QFrame):
             QPushButton {
                 background-color: #ff0000;
             }
-        """
+            """
         )
         self.nuke_button.clicked.connect(self.nuke_all)
         self.main_layout.addWidget(self.nuke_button)
@@ -52,39 +50,32 @@ class Task(QFrame):
                 border: 1px solid black;
                 border-radius: 4px;
             }
-        """
+            """
         )
 
         self.setLayout(self.main_layout)
 
     def nuke_all(self):
-        print(f"[NUKE] Nuking all PIDs for {self.name}: {self.pids}")
         for pid in self.pids:
             try:
                 psutil.Process(pid).kill()
-                print(f"[NUKE] Killed PID {pid}")
-            except psutil.NoSuchProcess:
-                print(f"[NUKE] PID {pid} does not exist")
-            except psutil.AccessDenied:
-                print(f"[NUKE] Access denied for PID {pid}")
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
 
 
 class TaskSection(Section):
     def __init__(self):
         super().__init__("Tasks")
-        print("[TaskSection INIT] Initializing task section")
         self.task_widgets = []
         QTimer.singleShot(100, self.update_tasks)
 
     def get_tasks(self):
         tasks = []
-        print("[GET_TASKS] Fetching processes...")
         for proc in psutil.process_iter(["pid", "name"]):
             try:
                 tasks.append({"pid": proc.info["pid"], "name": proc.info["name"]})
             except (psutil.NoSuchProcess, psutil.AccessDenied):
                 continue
-        print(f"[GET_TASKS] Found {len(tasks)} processes")
         return tasks
 
     def update_tasks(self):
