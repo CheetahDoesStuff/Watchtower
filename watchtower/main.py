@@ -40,9 +40,6 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(central)
 
-    def showEvent(self, event):
-        super().showEvent(event)
-
 
 def main():
     app = QApplication(sys.argv)
