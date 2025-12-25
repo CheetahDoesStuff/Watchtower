@@ -25,10 +25,8 @@ def physical_disks():
     for d in disks:
         if d["type"] != "disk":
             continue
-        # ignore devices with 0 size
         if int(d.get("size", 0)) == 0:
             continue
-        # ignore disks with no partitions
         if not d.get("children"):
             continue
         real_disks.append(d)
