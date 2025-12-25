@@ -1,7 +1,7 @@
 from watchtower.widgets.top import Topbar
 from watchtower.widgets.usage import UsageSection
 from watchtower.widgets.disks import DiskSection
-from watchtower.widgets.tasks import TaskSection
+from watchtower.widgets.processes import ProcessSection
 
 import sys
 
@@ -24,10 +24,10 @@ class MainWindow(QMainWindow):
         central_layout = QVBoxLayout()
         central.setLayout(central_layout)
 
-        self.sections = [Topbar(), UsageSection(), DiskSection(), TaskSection()]
+        self.sections = [Topbar(), UsageSection(), DiskSection(), ProcessSection()]
 
         for widget in self.sections:
-            if type(widget) is type(TaskSection()):
+            if type(widget) is type(ProcessSection()):
                 widget.setSizePolicy(
                     widget.sizePolicy().horizontalPolicy(),
                     widget.sizePolicy().verticalPolicy(),
