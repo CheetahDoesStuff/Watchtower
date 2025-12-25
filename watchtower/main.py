@@ -1,6 +1,7 @@
 from watchtower.widgets.top import Topbar
 from watchtower.widgets.usage import UsageSection
 from watchtower.widgets.disks import DiskSection
+from watchtower.widgets.tasks import TaskSection
 
 import sys
 
@@ -24,7 +25,9 @@ class MainWindow(QMainWindow):
         central_layout = QVBoxLayout()
         central.setLayout(central_layout)
 
-        for widget in [Topbar(), UsageSection(), DiskSection()]:
+        self.sections = [Topbar(), UsageSection(), DiskSection(), TaskSection()]
+
+        for widget in self.sections:
             widget.setSizePolicy(
                 widget.sizePolicy().horizontalPolicy(), QSizePolicy.Policy.Fixed
             )
@@ -35,6 +38,9 @@ class MainWindow(QMainWindow):
         )
 
         self.setCentralWidget(central)
+
+    def showEvent(self, event):
+        super().showEvent(event)
 
 
 def main():
