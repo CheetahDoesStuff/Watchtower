@@ -4,11 +4,14 @@ from PyQt6.QtCore import Qt
 
 
 class Meter(QWidget):
-    def __init__(self, label):
+    def __init__(self, label, col="#3870d9"):
         super().__init__()
         self.progress_bar = QProgressBar()
         self.progress_bar.setValue(60)
         self.progress_bar.setTextVisible(False)
+        self.progress_bar.setStyleSheet(
+            f"QProgressBar::chunk {{background-color:  {col};}}"
+        )
 
         self.name = QLabel(label)
         self.big_font = QFont()

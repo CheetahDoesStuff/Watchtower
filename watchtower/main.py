@@ -28,6 +28,7 @@ class MainWindow(QMainWindow):
         central_layout.addWidget(Topbar())
 
         usage_layout = QVBoxLayout()
+
         self.meters = [Meter("CPU"), Meter("RAM")]
         for meter in self.meters:
             usage_layout.addWidget(meter)
