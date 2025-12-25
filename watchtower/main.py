@@ -1,5 +1,6 @@
 from watchtower.widgets.top import Topbar
 from watchtower.widgets.usage import UsageSection
+from watchtower.widgets.disks import DiskSection
 
 import sys
 
@@ -8,6 +9,8 @@ from PyQt6.QtWidgets import (
     QMainWindow,
     QVBoxLayout,
     QWidget,
+    QSpacerItem,
+    QSizePolicy,
 )
 
 
@@ -20,11 +23,17 @@ class MainWindow(QMainWindow):
         central = QWidget()
         central_layout = QVBoxLayout()
         central.setLayout(central_layout)
-        central_layout.addWidget(Topbar())
 
-        usage = UsageSection()
+        for widget in [Topbar(), UsageSection(), DiskSection()]:
+            widget.setSizePolicy(
+                widget.sizePolicy().horizontalPolicy(), QSizePolicy.Policy.Fixed
+            )
+            central_layout.addWidget(widget)
 
-        central_layout.addWidget(usage)
+        central_layout.addItem(
+            QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        )
+
         self.setCentralWidget(central)
 
 

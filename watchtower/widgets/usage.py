@@ -3,7 +3,6 @@ from watchtower.widgets.meter import Meter
 
 import psutil
 
-from PyQt6.QtWidgets import QSizePolicy, QSpacerItem
 from PyQt6.QtCore import QTimer
 
 
@@ -14,10 +13,6 @@ class UsageSection(Section):
         self.meters = [Meter("CPU"), Meter("RAM")]
         for meter in self.meters:
             self.addWidget(meter)
-
-        self.addItem(
-            QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-        )
 
         timer = QTimer(self)
         timer.timeout.connect(self.update_meters)
