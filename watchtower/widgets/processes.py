@@ -221,7 +221,7 @@ class ProcessSection(Section):
         count = self.process_layout.count()
         for i in reversed(range(count - 1)):
             item = self.process_layout.itemAt(i)
-            widget = item.widget()
+            widget = item.widget()  # ty:ignore[possibly-missing-attribute]
             if widget:
                 self.process_layout.removeWidget(widget)
 
