@@ -1,5 +1,6 @@
 from watchtower.widgets.section import Section
 from watchtower.widgets.meter import Meter
+from watchtower.helpers.byte_format import format_bytes
 
 import psutil
 
@@ -25,5 +26,5 @@ class UsageSection(Section):
 
         self.meters[1].set(int(psutil.virtual_memory().percent))
         self.meters[1].percentage.setText(
-            f"{round(psutil.virtual_memory().used / (1024.0**3), 1)}GB / {round(psutil.virtual_memory().total / (1024.0**3), 1)}GB"
+            f"{format_bytes(psutil.virtual_memory().used)} / {format_bytes(psutil.virtual_memory().total)}"
         )

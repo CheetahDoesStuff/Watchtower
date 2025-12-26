@@ -5,6 +5,8 @@ import psutil
 
 from watchtower.widgets.section import Section
 from watchtower.widgets.meter import Meter
+from watchtower.helpers.byte_format import format_bytes
+
 from PyQt6.QtCore import QTimer
 
 
@@ -65,7 +67,6 @@ class DiskSection(Section):
                     total += t
             if total:
                 meter.set(round(used / (total / 100)))
-                GB = 1024**3
                 meter.percentage.setText(
-                    f"{round(used / GB, 1) if used / GB < 1000 else round(used / GB / 10244, 1)}GB / {round(total / GB, 1)}GB"
+                    f"{format_bytes(used)} / {format_bytes(total)}"
                 )
