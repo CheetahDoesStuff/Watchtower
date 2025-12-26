@@ -1,4 +1,3 @@
-from tkinter.font import BOLD
 from PyQt6.QtWidgets import (
     QLabel,
     QSpacerItem,
@@ -21,7 +20,7 @@ class Topbar(Section):
         title_font.setBold(True)
         title_label.setFont(title_font)
         title_label.setStyleSheet(
-            f"QLabel {{color:  {themes[themes["active_theme"]]["text-header"]};}}"  # ty:ignore[invalid-argument-type]
+            f"QLabel {{color:  {themes[themes['active_theme']]['text-header']};}}"  # ty:ignore[invalid-argument-type]
         )
 
         info_button = QPushButton("Info")

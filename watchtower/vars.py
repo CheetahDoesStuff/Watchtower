@@ -9,7 +9,7 @@ themes = {
         "section-text": "#000000",
         "button-bg": "#ffffff",
         "button-kill-bg": "#ff0000",
-        "bar-meter": "#1168f5"
+        "bar-meter": "#1168f5",
     },
     "dark": {
         "bg": "#303030",
@@ -20,6 +20,6 @@ themes = {
         "section-text": "#a6a6a6",
         "button-bg": "#404040",
         "button-kill-bg": "#ff0000",
-        "bar-meter": "#1168f5"
-    }
+        "bar-meter": "#1168f5",
+    },
 }

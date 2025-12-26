@@ -17,7 +17,7 @@ class Meter(QWidget):
 
         self.name = QLabel(label)
         self.name.setStyleSheet(
-            f"QLabel {{color:  {themes[themes["active_theme"]]["text-header"]};}}"  # ty:ignore[invalid-argument-type]
+            f"QLabel {{color:  {themes[themes['active_theme']]['text-header']};}}"  # ty:ignore[invalid-argument-type]
         )
         self.big_font = QFont()
         self.big_font.setPointSize(12)
@@ -43,7 +43,7 @@ class Meter(QWidget):
         self.progress_bar.setValue(0)
         self.progress_bar.setTextVisible(False)
         self.progress_bar.setStyleSheet(
-            f"QProgressBar::chunk {{background-color:  {themes[themes["active_theme"]]["bar-meter"]};}}"  # ty:ignore[invalid-argument-type]
+            f"QProgressBar::chunk {{background-color:  {themes[themes['active_theme']]['bar-meter']};}}"  # ty:ignore[invalid-argument-type]
         )
         self.progress_bar.setSizePolicy(
             self.progress_bar.sizePolicy().horizontalPolicy(),

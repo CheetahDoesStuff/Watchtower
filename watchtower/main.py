@@ -23,7 +23,8 @@ class MainWindow(QMainWindow):
 
         central = QWidget()
         central.setObjectName("Main")
-        central.setStyleSheet(f"""
+        central.setStyleSheet(
+            f"""
         QWidget#Main, QWidget#Main * {{
             background: {themes[themes["active_theme"]]["bg"]};
             color: {themes[themes["active_theme"]]["text"]};
@@ -31,7 +32,8 @@ class MainWindow(QMainWindow):
         QPushButton {{
             background: {themes[themes["active_theme"]]["button-bg"]};
         }}
-        """)  # ty:ignore[invalid-argument-type]
+        """
+        )  # ty:ignore[invalid-argument-type]
 
         central_layout = QVBoxLayout()
         central.setLayout(central_layout)
