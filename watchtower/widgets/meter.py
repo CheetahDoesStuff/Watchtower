@@ -6,12 +6,13 @@ from PyQt6.QtCore import Qt
 class Meter(QWidget):
     def __init__(self, label, col="#3870d9"):
         super().__init__()
-        self.progress_bar = QProgressBar()
-        self.progress_bar.setValue(0)
-        self.progress_bar.setTextVisible(False)
-        self.progress_bar.setStyleSheet(
-            f"QProgressBar::chunk {{background-color:  {col};}}"
-        )
+
+        main_layout = QHBoxLayout()
+        main_layout.setContentsMargins(0, 0, 0, 0)
+
+        labels_layout = QVBoxLayout()
+        labels_layout.setSpacing(5)
+        labels_layout.setContentsMargins(0, 0, 0, 0)
 
         self.name = QLabel(label)
         self.big_font = QFont()
@@ -28,26 +29,29 @@ class Meter(QWidget):
         self.name.setMinimumWidth(80)
         self.percentage.setMinimumWidth(80)
 
+        labels_layout.addWidget(self.name)
+        labels_layout.addWidget(self.percentage)
+
+        labels_layout.setAlignment(self.name, Qt.AlignmentFlag.AlignRight)
+        labels_layout.setAlignment(self.percentage, Qt.AlignmentFlag.AlignRight)
+
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setValue(0)
+        self.progress_bar.setTextVisible(False)
+        self.progress_bar.setStyleSheet(
+            f"QProgressBar::chunk {{background-color:  {col};}}"
+        )
         self.progress_bar.setSizePolicy(
             self.progress_bar.sizePolicy().horizontalPolicy(),
             self.progress_bar.sizePolicy().verticalPolicy().Expanding,
         )
 
-        labels_layout = QVBoxLayout()
-        labels_layout.addWidget(self.name)
-        labels_layout.addWidget(self.percentage)
-        labels_layout.setSpacing(5)
-        labels_layout.setContentsMargins(0, 0, 0, 0)
-        labels_layout.setAlignment(self.name, Qt.AlignmentFlag.AlignRight)
-        labels_layout.setAlignment(self.percentage, Qt.AlignmentFlag.AlignRight)
-
-        main_layout = QHBoxLayout()
         main_layout.addLayout(labels_layout)
         main_layout.addWidget(self.progress_bar)
+
         main_layout.setStretch(0, 0)
         main_layout.setStretch(1, 1)
 
-        main_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(main_layout)
 
     def set(self, val):

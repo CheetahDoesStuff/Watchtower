@@ -27,36 +27,14 @@ class Process(QFrame):
         self.processes = [psutil.Process(pid) for pid in self.pids]
         self.on_kill = onKill
 
+        for p in self.processes:
+            try:
+                p.cpu_percent(None)
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+
         self.cpu = 0
         self.ram_bytes = 0
-
-        self.main_layout = QHBoxLayout()
-
-        self.name_label = QLabel(name)
-        self.main_layout.addWidget(self.name_label)
-
-        self.main_layout.addItem(
-            QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-        )
-
-        self.cpu_usage_label = QLabel("CPU: None")
-        self.cpu_usage_label.setFixedWidth(80)
-        self.ram_usage_label = QLabel("RAM: None (None)")
-        self.ram_usage_label.setFixedWidth(140)
-
-        self.main_layout.addWidget(self.cpu_usage_label)
-        self.main_layout.addWidget(self.ram_usage_label)
-
-        self.nuke_button = QPushButton(text="NUKE")
-        self.nuke_button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: #ff0000;
-            }
-            """
-        )
-        self.nuke_button.clicked.connect(self.nuke_all)
-        self.main_layout.addWidget(self.nuke_button)
 
         self.setObjectName("processFrame")
         self.setStyleSheet(
@@ -69,9 +47,37 @@ class Process(QFrame):
             """
         )
 
+        self.main_layout = QHBoxLayout()
+
+        self.name_label = QLabel(name)
+
+        self.cpu_usage_label = QLabel("CPU: None")
+        self.cpu_usage_label.setFixedWidth(80)
+
+        self.ram_usage_label = QLabel("RAM: None (None)")
+        self.ram_usage_label.setFixedWidth(140)
+
+        self.nuke_button = QPushButton(text="NUKE")
+        self.nuke_button.setStyleSheet(
+            """
+            QPushButton {
+                background-color: #ff0000;
+            }
+            """
+        )
+        self.nuke_button.clicked.connect(self.nuke_all)
+
+        self.main_layout.addWidget(self.name_label)
+        self.main_layout.addItem(
+            QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        )
+        self.main_layout.addWidget(self.cpu_usage_label)
+        self.main_layout.addWidget(self.ram_usage_label)
+        self.main_layout.addWidget(self.nuke_button)
+
         self.setLayout(self.main_layout)
 
-        QTimer.singleShot(0, self.update_usage)
+        QTimer.singleShot(100, self.update_usage)
 
         timer = QTimer(self)
         timer.timeout.connect(self.update_usage)
@@ -112,7 +118,7 @@ class ProcessSection(Section):
     def __init__(self):
         super().__init__("Processes")
 
-        self.sort = "CPU"  # CPU or RAM
+        self.sort = "RAM"  # CPU or RAM
 
         self.top_layout = QHBoxLayout()
 
@@ -132,7 +138,6 @@ class ProcessSection(Section):
 
         self.top = QWidget()
         self.top.setLayout(self.top_layout)
-        self.addWidget(self.top)
 
         self.process_widgets = {}
 
@@ -153,11 +158,13 @@ class ProcessSection(Section):
         )
 
         self.process_container = QWidget()
+
         self.process_layout = QVBoxLayout(self.process_container)
         self.process_layout.setContentsMargins(0, 0, 0, 0)
         self.process_layout.setSpacing(0)
-
         self.process_area.setWidget(self.process_container)
+
+        self.addWidget(self.top)
         self.addWidget(self.process_area, 1)
 
         QTimer.singleShot(200, self.update_processes)
@@ -200,7 +207,7 @@ class ProcessSection(Section):
         self.process_area.setUpdatesEnabled(True)
         self.process_area.update()
 
-        self.sort_processlist()
+        QTimer.singleShot(0, self.sort_processlist)
         self.update_processlist(self.searchbar.text())
 
     def focusInEvent(self, event):  # ty:ignore[invalid-method-override]
