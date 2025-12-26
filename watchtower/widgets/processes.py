@@ -44,6 +44,8 @@ class Process(QFrame):
                 background-color: {themes[themes["active_theme"]]["bg-2"]};
                 border: 1px solid {themes[themes["active_theme"]]["section-border"]};
                 border-radius: 4px;
+                margin: 1px;
+                margin-right: 5px;
             }}
             QFrame#processFrame * {{
                 background-color: {themes[themes["active_theme"]]["bg-2"]};
