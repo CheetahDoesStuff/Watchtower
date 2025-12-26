@@ -77,7 +77,7 @@ class ProcessSection(Section):
         self.searchbar.textChanged.connect(self.update_processlist)
 
         self.update_button = QPushButton("Update")
-        self.update_button.clicked.connect(self.update_processs)
+        self.update_button.clicked.connect(self.update_processes)
 
         self.top_layout.addWidget(self.searchbar)
         self.top_layout.addWidget(self.update_button)
@@ -112,22 +112,22 @@ class ProcessSection(Section):
         self.process_area.setWidget(self.process_container)
         self.addWidget(self.process_area, 1)
 
-        QTimer.singleShot(200, self.update_processs)
+        QTimer.singleShot(200, self.update_processes)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
-    def get_processs(self):
-        processs = []
+    def get_processes(self):
+        processes = []
         for proc in psutil.process_iter(["pid", "name"]):
             try:
-                processs.append({"pid": proc.info["pid"], "name": proc.info["name"]})
+                processes.append({"pid": proc.info["pid"], "name": proc.info["name"]})
             except (psutil.NoSuchProcess, psutil.AccessDenied):
                 continue
-        return processs
+        return processes
 
-    def update_processs(self):
-        all_processs = self.get_processs()
+    def update_processes(self):
+        all_processes = self.get_processes()
         grouped = {}
-        for process in all_processs:
+        for process in all_processes:
             grouped.setdefault(process["name"], []).append(process["pid"])
 
         self.process_area.setUpdatesEnabled(False)
@@ -137,11 +137,14 @@ class ProcessSection(Section):
         self.process_widgets.clear()
 
         for name, pids in grouped.items():
-            process_widget = Process(name, pids, self.update_processs)
+            process_widget = Process(name, pids, self.update_processes)
             self.process_widgets[name] = process_widget
             self.process_layout.addWidget(process_widget)
 
-        self.process_layout.addStretch()
+        self.process_layout.addItem(
+            QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        )
+
         self.process_area.setUpdatesEnabled(True)
         self.process_area.update()
 
@@ -149,11 +152,11 @@ class ProcessSection(Section):
 
     def focusInEvent(self, event):  # ty:ignore[invalid-method-override]
         super().focusInEvent(event)
-        QTimer.singleShot(0, self.update_processs)
+        QTimer.singleShot(0, self.update_processes)
 
     def focusOutEvent(self, event):  # ty:ignore[invalid-method-override]
         super().focusOutEvent(event)
-        QTimer.singleShot(0, self.update_processs)
+        QTimer.singleShot(0, self.update_processes)
 
     def update_processlist(self, text):
         for processname in self.process_widgets:
