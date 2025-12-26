@@ -1,10 +1,11 @@
 from PyQt6.QtWidgets import QWidget, QProgressBar, QLabel, QHBoxLayout, QVBoxLayout
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt
+from watchtower.vars import themes
 
 
 class Meter(QWidget):
-    def __init__(self, label, col="#3870d9"):
+    def __init__(self, label):
         super().__init__()
 
         main_layout = QHBoxLayout()
@@ -15,6 +16,9 @@ class Meter(QWidget):
         labels_layout.setContentsMargins(0, 0, 0, 0)
 
         self.name = QLabel(label)
+        self.name.setStyleSheet(
+            f"QLabel {{color:  {themes[themes["active_theme"]]["text-header"]};}}"  # ty:ignore[invalid-argument-type]
+        )
         self.big_font = QFont()
         self.big_font.setPointSize(12)
         self.big_font.setBold(True)
@@ -39,7 +43,7 @@ class Meter(QWidget):
         self.progress_bar.setValue(0)
         self.progress_bar.setTextVisible(False)
         self.progress_bar.setStyleSheet(
-            f"QProgressBar::chunk {{background-color:  {col};}}"
+            f"QProgressBar::chunk {{background-color:  {themes[themes["active_theme"]]["bar-meter"]};}}"  # ty:ignore[invalid-argument-type]
         )
         self.progress_bar.setSizePolicy(
             self.progress_bar.sizePolicy().horizontalPolicy(),

@@ -1,0 +1,25 @@
+themes = {
+    "active_theme": "light",
+    "light": {
+        "bg": "#ffffff",
+        "bg-2": "#e0e0e0",
+        "text": "#000000",
+        "text-header": "#000000",
+        "section-border": "#000000",
+        "section-text": "#000000",
+        "button-bg": "#ffffff",
+        "button-kill-bg": "#ff0000",
+        "bar-meter": "#1168f5"
+    },
+    "dark": {
+        "bg": "#303030",
+        "bg-2": "#404040",
+        "text": "#cfcfcf",
+        "text-header": "#fafafa",
+        "section-border": "#969696",
+        "section-text": "#a6a6a6",
+        "button-bg": "#404040",
+        "button-kill-bg": "#ff0000",
+        "bar-meter": "#1168f5"
+    }
+}

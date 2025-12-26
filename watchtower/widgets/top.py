@@ -1,3 +1,4 @@
+from tkinter.font import BOLD
 from PyQt6.QtWidgets import (
     QLabel,
     QSpacerItem,
@@ -8,6 +9,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QFont
 
 from watchtower.widgets.section import Section
+from watchtower.vars import themes
 
 
 class Topbar(Section):
@@ -15,7 +17,12 @@ class Topbar(Section):
         super().__init__("", True)
 
         title_label = QLabel("Watchtower")
-        title_label.setFont(QFont("Arial", 16))
+        title_font = QFont("Arial", 16)
+        title_font.setBold(True)
+        title_label.setFont(title_font)
+        title_label.setStyleSheet(
+            f"QLabel {{color:  {themes[themes["active_theme"]]["text-header"]};}}"  # ty:ignore[invalid-argument-type]
+        )
 
         info_button = QPushButton("Info")
         info_button.clicked.connect(self.open_info)

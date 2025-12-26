@@ -1,4 +1,5 @@
 from PyQt6.QtWidgets import QGroupBox, QVBoxLayout, QHBoxLayout
+from watchtower.vars import themes
 
 
 class Section(QGroupBox):
@@ -13,22 +14,22 @@ class Section(QGroupBox):
         self.setLayout(layout)
 
         self.setStyleSheet(
-            """
-        QGroupBox {
-            border: 1px solid #777;
+            f"""
+        QGroupBox {{
+            border: 1px solid {themes[themes["active_theme"]]["section-border"]};
             border-radius: 4px;
             margin-top: 10px;
-        }
+        }}
 
-        QGroupBox::title {
+        QGroupBox::title {{
             subcontrol-origin: border;
             subcontrol-position: top left;
             left: 10px;
             padding: 0 6px;
             top: -8px;
-            background-color: palette(window);
-        }
-        """
+            background-color: {themes[themes["active_theme"]]["bg"]};
+        }}
+        """  # ty:ignore[invalid-argument-type]
         )
 
     def addWidget(self, widget, stretch=0):

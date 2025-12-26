@@ -1,5 +1,6 @@
 from watchtower.widgets.section import Section
 from watchtower.helpers.byte_format import format_bytes
+from watchtower.vars import themes
 
 import psutil
 
@@ -38,13 +39,16 @@ class Process(QFrame):
 
         self.setObjectName("processFrame")
         self.setStyleSheet(
-            """
-            QFrame#processFrame {
-                background-color: #e0e0e0;
-                border: 1px solid black;
+            f"""
+            QFrame#processFrame {{
+                background-color: {themes[themes["active_theme"]]["bg-2"]};
+                border: 1px solid {themes[themes["active_theme"]]["section-border"]};
                 border-radius: 4px;
-            }
-            """
+            }}
+            QFrame#processFrame * {{
+                background-color: {themes[themes["active_theme"]]["bg-2"]};
+            }}
+            """  # ty:ignore[invalid-argument-type]
         )
 
         self.main_layout = QHBoxLayout()
@@ -59,11 +63,11 @@ class Process(QFrame):
 
         self.nuke_button = QPushButton(text="NUKE")
         self.nuke_button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: #ff0000;
-            }
-            """
+            f"""
+            QPushButton {{
+                background-color: {themes[themes["active_theme"]]["button-kill-bg"]};
+            }}
+            """  # ty:ignore[invalid-argument-type]
         )
         self.nuke_button.clicked.connect(self.nuke_all)
 
@@ -118,7 +122,7 @@ class ProcessSection(Section):
     def __init__(self):
         super().__init__("Processes")
 
-        self.sort = "RAM"  # CPU or RAM
+        self.sort = "None"  # CPU or RAM
 
         self.top_layout = QHBoxLayout()
 
@@ -126,7 +130,7 @@ class ProcessSection(Section):
         self.searchbar.setPlaceholderText("Search processes...")
         self.searchbar.textChanged.connect(self.update_processlist)
 
-        self.sort_button = QPushButton("Sort: CPU")
+        self.sort_button = QPushButton("Sort: None")
         self.sort_button.clicked.connect(self.update_sort_type)
 
         self.update_button = QPushButton("Update")
@@ -222,7 +226,7 @@ class ProcessSection(Section):
         items = list(self.process_widgets.items())
         if self.sort == "CPU":
             items.sort(key=lambda item: item[1].cpu, reverse=True)
-        else:
+        elif self.sort == "RAM":
             items.sort(key=lambda item: item[1].ram_bytes, reverse=True)
 
         count = self.process_layout.count()

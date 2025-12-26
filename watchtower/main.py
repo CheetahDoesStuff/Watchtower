@@ -2,6 +2,7 @@ from watchtower.widgets.top import Topbar
 from watchtower.widgets.usage import UsageSection
 from watchtower.widgets.disks import DiskSection
 from watchtower.widgets.processes import ProcessSection
+from watchtower.vars import themes
 
 import sys
 
@@ -21,6 +22,17 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("WatchTower - Taskmanager And System Monitor")
 
         central = QWidget()
+        central.setObjectName("Main")
+        central.setStyleSheet(f"""
+        QWidget#Main, QWidget#Main * {{
+            background: {themes[themes["active_theme"]]["bg"]};
+            color: {themes[themes["active_theme"]]["text"]};
+        }}
+        QPushButton {{
+            background: {themes[themes["active_theme"]]["button-bg"]};
+        }}
+        """)  # ty:ignore[invalid-argument-type]
+
         central_layout = QVBoxLayout()
         central.setLayout(central_layout)
 

@@ -6,6 +6,7 @@ import psutil
 from watchtower.widgets.section import Section
 from watchtower.widgets.meter import Meter
 from watchtower.helpers.byte_format import format_bytes
+from watchtower.vars import themes
 
 from PyQt6.QtCore import QTimer
 
