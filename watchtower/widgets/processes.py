@@ -16,6 +16,7 @@ from PyQt6.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QLineEdit,
+    QMessageBox,
 )
 
 
@@ -71,7 +72,7 @@ class Process(QFrame):
             }}
             """  # ty:ignore[invalid-argument-type]
         )
-        self.nuke_button.clicked.connect(self.nuke_all)
+        self.nuke_button.clicked.connect(self.nuke_dialog)
 
         self.main_layout.addWidget(self.name_label)
         self.main_layout.addItem(
@@ -110,6 +111,20 @@ class Process(QFrame):
         self.ram_usage_label.setText(
             f"RAM: {format_bytes(ram_bytes)} ({round(ram, 1)}%)"
         )
+
+    def nuke_dialog(self):
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle("Are you sure? - Watchtower")
+        msg_box.setText(f"Are you sure you wanna NUKE the '{self.name}' process?")
+        msg_box.setStandardButtons(
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel
+        )
+        msg_box.setDefaultButton(QMessageBox.StandardButton.Cancel)
+
+        result = msg_box.exec()
+
+        if result == QMessageBox.StandardButton.Yes:
+            self.nuke_all()
 
     def nuke_all(self):
         for pid in self.pids:

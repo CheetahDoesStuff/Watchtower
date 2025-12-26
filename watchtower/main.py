@@ -32,8 +32,8 @@ class MainWindow(QMainWindow):
         QPushButton {{
             background: {themes[themes["active_theme"]]["button-bg"]};
         }}
-        """
-        )  # ty:ignore[invalid-argument-type]
+        """  # ty:ignore[invalid-argument-type]
+        )
 
         central_layout = QVBoxLayout()
         central.setLayout(central_layout)
