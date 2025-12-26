@@ -1,4 +1,6 @@
 from watchtower.widgets.section import Section
+from watchtower.helpers.byte_format import format_bytes
+
 import psutil
 
 from PyQt6.QtCore import QTimer, Qt
@@ -22,7 +24,11 @@ class Process(QFrame):
 
         self.name = name
         self.pids = pids
+        self.processes = [psutil.Process(pid) for pid in self.pids]
         self.on_kill = onKill
+
+        self.cpu = 0
+        self.ram_bytes = 0
 
         self.main_layout = QHBoxLayout()
 
@@ -32,6 +38,14 @@ class Process(QFrame):
         self.main_layout.addItem(
             QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         )
+
+        self.cpu_usage_label = QLabel("CPU: None")
+        self.cpu_usage_label.setFixedWidth(80)
+        self.ram_usage_label = QLabel("RAM: None (None)")
+        self.ram_usage_label.setFixedWidth(140)
+
+        self.main_layout.addWidget(self.cpu_usage_label)
+        self.main_layout.addWidget(self.ram_usage_label)
 
         self.nuke_button = QPushButton(text="NUKE")
         self.nuke_button.setStyleSheet(
@@ -57,6 +71,34 @@ class Process(QFrame):
 
         self.setLayout(self.main_layout)
 
+        QTimer.singleShot(0, self.update_usage)
+
+        timer = QTimer(self)
+        timer.timeout.connect(self.update_usage)
+        timer.start(2000)
+
+    def update_usage(self):
+        cpu = 0
+        ram = 0
+        ram_bytes = 0
+
+        for p in self.processes:
+            try:
+                cpu += p.cpu_percent() / psutil.cpu_count()
+                ram += p.memory_percent()
+                ram_bytes += p.memory_info().rss
+
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+
+        self.cpu = cpu
+        self.ram_bytes = ram_bytes
+
+        self.cpu_usage_label.setText(f"CPU: {round(cpu, 1)}%")
+        self.ram_usage_label.setText(
+            f"RAM: {format_bytes(ram_bytes)} ({round(ram, 1)}%)"
+        )
+
     def nuke_all(self):
         for pid in self.pids:
             try:
@@ -70,16 +112,22 @@ class ProcessSection(Section):
     def __init__(self):
         super().__init__("Processes")
 
+        self.sort = "CPU"  # CPU or RAM
+
         self.top_layout = QHBoxLayout()
 
         self.searchbar = QLineEdit()
         self.searchbar.setPlaceholderText("Search processes...")
         self.searchbar.textChanged.connect(self.update_processlist)
 
+        self.sort_button = QPushButton("Sort: CPU")
+        self.sort_button.clicked.connect(self.update_sort_type)
+
         self.update_button = QPushButton("Update")
         self.update_button.clicked.connect(self.update_processes)
 
         self.top_layout.addWidget(self.searchbar)
+        self.top_layout.addWidget(self.sort_button)
         self.top_layout.addWidget(self.update_button)
 
         self.top = QWidget()
@@ -115,6 +163,10 @@ class ProcessSection(Section):
         QTimer.singleShot(200, self.update_processes)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
+        timer = QTimer(self)
+        timer.timeout.connect(self.sort_processlist)
+        timer.start(5000)
+
     def get_processes(self):
         processes = []
         for proc in psutil.process_iter(["pid", "name"]):
@@ -148,6 +200,7 @@ class ProcessSection(Section):
         self.process_area.setUpdatesEnabled(True)
         self.process_area.update()
 
+        self.sort_processlist()
         self.update_processlist(self.searchbar.text())
 
     def focusInEvent(self, event):  # ty:ignore[invalid-method-override]
@@ -158,9 +211,34 @@ class ProcessSection(Section):
         super().focusOutEvent(event)
         QTimer.singleShot(0, self.update_processes)
 
+    def sort_processlist(self):
+        items = list(self.process_widgets.items())
+        if self.sort == "CPU":
+            items.sort(key=lambda item: item[1].cpu, reverse=True)
+        else:
+            items.sort(key=lambda item: item[1].ram_bytes, reverse=True)
+
+        count = self.process_layout.count()
+        for i in reversed(range(count - 1)):
+            item = self.process_layout.itemAt(i)
+            widget = item.widget()
+            if widget:
+                self.process_layout.removeWidget(widget)
+
+        for name, widget in items:
+            self.process_layout.insertWidget(self.process_layout.count() - 1, widget)
+
+        self.process_widgets = dict(items)
+
     def update_processlist(self, text):
+        self.sort_processlist()
         for processname in self.process_widgets:
             if text.upper() in processname.upper():
                 self.process_widgets[processname].show()
             else:
                 self.process_widgets[processname].hide()
+
+    def update_sort_type(self):
+        self.sort = "RAM" if self.sort == "CPU" else "CPU"
+        self.sort_button.setText(f"Sort: {self.sort}")
+        self.sort_processlist()
