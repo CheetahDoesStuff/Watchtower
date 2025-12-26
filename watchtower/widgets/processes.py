@@ -139,7 +139,7 @@ class ProcessSection(Section):
     def __init__(self):
         super().__init__("Processes")
 
-        self.sort = "None"  # CPU or RAM
+        self.sort = "RAM"  # CPU or RAM
 
         self.top_layout = QHBoxLayout()
 
@@ -147,7 +147,7 @@ class ProcessSection(Section):
         self.searchbar.setPlaceholderText("Search processes...")
         self.searchbar.textChanged.connect(self.update_processlist)
 
-        self.sort_button = QPushButton("Sort: None")
+        self.sort_button = QPushButton("Sort: RAM")
         self.sort_button.clicked.connect(self.update_sort_type)
 
         self.update_button = QPushButton("Update")
@@ -189,6 +189,7 @@ class ProcessSection(Section):
         self.addWidget(self.process_area, 1)
 
         QTimer.singleShot(200, self.update_processes)
+        QTimer.singleShot(400, self.sort_processlist)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
         timer = QTimer(self)
@@ -228,7 +229,7 @@ class ProcessSection(Section):
         self.process_area.setUpdatesEnabled(True)
         self.process_area.update()
 
-        QTimer.singleShot(0, self.sort_processlist)
+        QTimer.singleShot(200, self.sort_processlist)
         self.update_processlist(self.searchbar.text())
 
     def focusInEvent(self, event):  # ty:ignore[invalid-method-override]
