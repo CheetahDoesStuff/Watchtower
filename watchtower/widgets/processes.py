@@ -1,8 +1,11 @@
 from watchtower.widgets.section import Section
+from watchtower.widgets.top import ProcessTopbar
 from watchtower.helpers.byte_format import format_bytes
 from watchtower.vars import themes
 
 import psutil
+from collections import Counter
+from datetime import datetime
 
 from PyQt6.QtCore import QTimer, Qt
 from PyQt6.QtWidgets import (
@@ -17,7 +20,144 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QLineEdit,
     QMessageBox,
+    QDialog,
 )
+
+
+class ProcessStatsSection(Section):
+    def __init__(self, parent):
+        super().__init__("Stats")
+
+        self.p = parent
+
+        self.last_read_bytes = 0
+        self.last_write_bytes = 0
+
+        self.cpu_usage_label = QLabel("CPU: None")
+        self.ram_usage_label = QLabel("RAM: None (None)")
+        self.read_usage_label = QLabel("I/O Read: None")
+        self.write_usage_label = QLabel("I/O Write: None")
+        self.instance_count_label = QLabel("Number of instances: None")
+        self.status_label = QLabel("Instance Statuses: None")
+        self.created_timestamp_label = QLabel(
+            "Created (earliest instance): None (None)"
+        )
+        self.parent_label = QLabel("Parent Processes (per instance): None")
+        self.user_label = QLabel("User: None")
+
+        self.addWidget(self.cpu_usage_label)
+        self.addWidget(self.ram_usage_label)
+        self.addWidget(self.read_usage_label)
+        self.addWidget(self.write_usage_label)
+        self.addWidget(self.instance_count_label)
+        self.addWidget(self.status_label)
+        self.addWidget(self.created_timestamp_label)
+        self.addWidget(self.parent_label)
+        self.addWidget(self.user_label)
+
+        timer = QTimer(self)
+        timer.timeout.connect(self.update_stats)
+        timer.start(500)
+
+    def get_io_delta(self):
+        total_read = 0
+        total_write = 0
+
+        for p in self.p.processes:
+            try:
+                io = p.io_counters()
+                if not io:
+                    continue
+
+                total_read += getattr(io, "read_bytes", 0)
+                total_write += getattr(io, "write_bytes", 0)
+
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+            except Exception:
+                self.io_failed = True
+                return None, None
+
+        read_delta = total_read - self.last_read_bytes
+        write_delta = total_write - self.last_write_bytes
+
+        self.last_read_bytes = total_read
+        self.last_write_bytes = total_write
+
+        return max(read_delta, 0), max(write_delta, 0)
+
+    def update_stats(self):
+        read, write = self.get_io_delta()
+
+        self.cpu_usage_label.setText(f"CPU: {round(self.p.cpu, 2)}%")
+        self.ram_usage_label.setText(
+            f"RAM: {format_bytes(self.p.ram_bytes)} ({round(self.p.ram, 2)}%)"
+        )
+
+        self.read_usage_label.setText(
+            f"I/O Read: {format_bytes(read * 2)} / s (Total: {format_bytes(self.last_read_bytes)})"
+        )
+        self.write_usage_label.setText(
+            f"I/O Write: {format_bytes(write * 2)} / s (Total: {format_bytes(self.last_write_bytes)})"
+        )
+
+        self.instance_count_label.setText(
+            f"Numer of instances: {len(self.p.processes)}"
+        )
+        self.status_label.setText(
+            f"Instance Statuses: {', '.join(f'({status}: {count})' for status, count in Counter(p.status() for p in self.p.processes).items())}"
+        )
+        self.parent_label.setText(
+            f"Parent processes (per instance): {', '.join(f'({parent}: {count})' for parent, count in Counter(p.parent().name() for p in self.p.processes).items())}"
+        )
+        self.user_label.setText(
+            f"User: {', '.join(f'({user}: {count})' for user, count in Counter(p.username() for p in self.p.processes).items())}"
+        )
+
+        now = datetime.now().timestamp()
+        created = min([p.create_time() for p in self.p.processes])
+        delta_seconds = int(now - created)
+
+        hours = delta_seconds // 3600
+        minutes = (delta_seconds % 3600) // 60
+        seconds = delta_seconds % 60
+
+        self.created_timestamp_label.setText(
+            f"Created (Earliest Instance): {datetime.fromtimestamp(created).strftime('%Y-%m-%d %H:%M:%S')} ({hours}h {minutes}m {seconds}s ago)"
+        )
+
+
+class ProcessStats(QDialog):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setWindowTitle(f"{parent.name} Stats - Watchtower")
+        self.resize(400, 300)
+
+        self.setStyleSheet(
+            f"""
+        QWidget, QWidget * {{
+            background: {themes[themes["active_theme"]]["bg"]};
+            color: {themes[themes["active_theme"]]["text"]};
+        }}
+        QPushButton {{
+            background: {themes[themes["active_theme"]]["button-bg"]};
+        }}
+        """  # ty:ignore[invalid-argument-type]
+        )
+
+        self.main_layout = QVBoxLayout()
+
+        self.main_layout.addWidget(ProcessTopbar(parent.name, self.close))
+        self.main_layout.addWidget(ProcessStatsSection(parent))
+        self.main_layout.addItem(
+            QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        )
+
+        self.setLayout(self.main_layout)
+
+    def closeEvent(self, event):  # ty:ignore[invalid-method-override]
+        self.parent().stats_window = None  # ty:ignore[invalid-assignment]
+        event.accept()
 
 
 class Process(QFrame):
@@ -28,6 +168,7 @@ class Process(QFrame):
         self.pids = pids
         self.processes = [psutil.Process(pid) for pid in self.pids]
         self.on_kill = onKill
+        self.stats_window = None
 
         for p in self.processes:
             try:
@@ -37,6 +178,7 @@ class Process(QFrame):
 
         self.cpu = 0
         self.ram_bytes = 0
+        self.ram = 0
 
         self.setObjectName("processFrame")
         self.setStyleSheet(
@@ -64,6 +206,9 @@ class Process(QFrame):
         self.ram_usage_label = QLabel("RAM: None (None)")
         self.ram_usage_label.setFixedWidth(140)
 
+        self.stats_button = QPushButton("More Stats")
+        self.stats_button.clicked.connect(self.open_stats)
+
         self.nuke_button = QPushButton(text="NUKE")
         self.nuke_button.setStyleSheet(
             f"""
@@ -80,6 +225,7 @@ class Process(QFrame):
         )
         self.main_layout.addWidget(self.cpu_usage_label)
         self.main_layout.addWidget(self.ram_usage_label)
+        self.main_layout.addWidget(self.stats_button)
         self.main_layout.addWidget(self.nuke_button)
 
         self.setLayout(self.main_layout)
@@ -106,6 +252,7 @@ class Process(QFrame):
 
         self.cpu = cpu
         self.ram_bytes = ram_bytes
+        self.ram = ram
 
         self.cpu_usage_label.setText(f"CPU: {round(cpu, 1)}%")
         self.ram_usage_label.setText(
@@ -133,6 +280,11 @@ class Process(QFrame):
             except (psutil.NoSuchProcess, psutil.AccessDenied):
                 continue
         self.on_kill()
+
+    def open_stats(self):
+        if not self.stats_window:
+            self.stats_window = ProcessStats(self)
+            self.stats_window.show()
 
 
 class ProcessSection(Section):

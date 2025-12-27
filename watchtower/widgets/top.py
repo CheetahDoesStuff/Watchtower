@@ -46,3 +46,29 @@ Originally created for the hackclub Flavortown program
         )
         msg_box.setStandardButtons(QMessageBox.StandardButton.Close)
         msg_box.exec()
+
+
+class ProcessTopbar(Section):
+    def __init__(
+        self,
+        process_name="Process",
+        close_func=lambda: print("You didnt specify a close function!"),
+    ):
+        super().__init__("", True)
+
+        title_label = QLabel(process_name)
+        title_font = QFont("Arial", 12)
+        title_font.setBold(True)
+        title_label.setFont(title_font)
+        title_label.setStyleSheet(
+            f"QLabel {{color:  {themes[themes['active_theme']]['text-header']};}}"  # ty:ignore[invalid-argument-type]
+        )
+
+        info_button = QPushButton("Close")
+        info_button.clicked.connect(close_func)
+
+        self.addWidget(title_label)
+        self.addItem(
+            QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        )
+        self.addWidget(info_button)
