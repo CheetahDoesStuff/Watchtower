@@ -1,6 +1,7 @@
 from watchtower.widgets.section import Section
 from watchtower.widgets.top import ProcessTopbar
 from watchtower.helpers.byte_format import format_bytes
+from watchtower.helpers.spacer_fix import fix_spacers
 from watchtower.vars import themes
 
 import psutil
@@ -166,7 +167,12 @@ class Process(QFrame):
 
         self.name = name
         self.pids = pids
-        self.processes = [psutil.Process(pid) for pid in self.pids]
+        self.processes = []
+        for pid in self.pids:
+            try:
+                self.processes.append(psutil.Process(pid))
+            except psutil.NoSuchProcess:
+                pass
         self.on_kill = onKill
         self.stats_window = None
 
@@ -307,7 +313,6 @@ class ProcessSection(Section):
 
         self.top_layout.addWidget(self.searchbar)
         self.top_layout.addWidget(self.sort_button)
-        self.top_layout.addWidget(self.update_button)
 
         self.top = QWidget()
         self.top.setLayout(self.top_layout)
@@ -348,6 +353,10 @@ class ProcessSection(Section):
         timer.timeout.connect(self.sort_processlist)
         timer.start(5000)
 
+        timer = QTimer(self)
+        timer.timeout.connect(self.update_processes)
+        timer.start(1000)
+
     def get_processes(self):
         processes = []
         for proc in psutil.process_iter(["pid", "name"]):
@@ -365,24 +374,42 @@ class ProcessSection(Section):
 
         self.process_area.setUpdatesEnabled(False)
 
-        for name, widget in self.process_widgets.items():
+        existing_processes = set(self.process_widgets.keys())
+        for name in existing_processes - set(grouped.keys()):
+            widget = self.process_widgets.pop(name)
             widget.setParent(None)
-        self.process_widgets.clear()
 
         for name, pids in grouped.items():
-            process_widget = Process(name, pids, self.update_processes)
-            self.process_widgets[name] = process_widget
-            self.process_layout.addWidget(process_widget)
+            valid_pids = []
+            for pid in pids:
+                try:
+                    psutil.Process(pid)
+                    valid_pids.append(pid)
+                except psutil.NoSuchProcess:
+                    continue
 
-        self.process_layout.addItem(
-            QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-        )
+            if not valid_pids:
+                if name in self.process_widgets:
+                    widget = self.process_widgets.pop(name)
+                    widget.setParent(None)
+                continue
 
+            if name in self.process_widgets:
+                self.process_widgets[name].pids = valid_pids
+                self.process_widgets[name].processes = [
+                    psutil.Process(pid) for pid in valid_pids
+                ]
+            else:
+                process_widget = Process(name, pids, self.update_processes)
+                self.process_widgets[name] = process_widget
+                self.process_layout.addWidget(process_widget)
+
+        fix_spacers(self.process_layout)
+
+        QTimer.singleShot(0, self.sort_processlist)
+        self.update_processlist(self.searchbar.text())
         self.process_area.setUpdatesEnabled(True)
         self.process_area.update()
-
-        QTimer.singleShot(200, self.sort_processlist)
-        self.update_processlist(self.searchbar.text())
 
     def focusInEvent(self, event):  # ty:ignore[invalid-method-override]
         super().focusInEvent(event)
