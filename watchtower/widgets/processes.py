@@ -160,6 +160,13 @@ class ProcessStats(QDialog):
         self.parent().stats_window = None  # ty:ignore[invalid-assignment]
         event.accept()
 
+    def keyPressEvent(self, event):  # ty:ignore[invalid-method-override]
+        if event.key() == Qt.Key.Key_Escape:
+            self.parent().stats_window = None  # ty:ignore[invalid-assignment]
+            self.close()
+        else:
+            super().keyPressEvent(event)
+
 
 class Process(QFrame):
     def __init__(self, name, pids, onKill):
@@ -396,9 +403,20 @@ class ProcessSection(Section):
 
             if name in self.process_widgets:
                 self.process_widgets[name].pids = valid_pids
+                old_processes = self.process_widgets[name].processes
+                old_pids = {p.pid for p in old_processes}
                 self.process_widgets[name].processes = [
-                    psutil.Process(pid) for pid in valid_pids
+                    p for p in old_processes if p.pid in valid_pids
                 ]
+                for pid in valid_pids:
+                    if pid not in old_pids:
+                        try:
+                            self.process_widgets[name].processes.append(
+                                psutil.Process(pid)
+                            )
+                        except psutil.NoSuchProcess:
+                            pass
+
             else:
                 process_widget = Process(name, pids, self.update_processes)
                 self.process_widgets[name] = process_widget
