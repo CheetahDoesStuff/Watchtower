@@ -17,7 +17,7 @@ themes = {
         "bg": "#d8dced",
         "fg-1": "#c8cbdb",
         "fg-2": "#babdcc",
-        "fg-3": "#aaaebf",
+        "fg-3": "#9aaebf",
         "text": "hsl(0, 0%, 25%)",
         "text-header": "hsl(0, 0%, 15%)",
         "border": "#9699a8",
