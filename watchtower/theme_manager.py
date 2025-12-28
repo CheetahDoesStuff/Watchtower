@@ -16,7 +16,6 @@ section-text = "hsl(0, 0%, 50%)"
 button-bg = "rgb(44, 50, 63)"
 button-kill-bg = "#a32626"
 bar-meter = "qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 rgb(230,120,120), stop:1 rgb(231,89,236))"
-bar-bg = "rgb(38, 44, 56)"
 
 ["Modern (Light)"]
 bg = "#d8dced"
@@ -30,7 +29,6 @@ section-text = "hsl(0, 0%, 50%)"
 button-bg = "#babdcc"
 button-kill-bg = "#e63c3c"
 bar-meter = "qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 rgb(230,120,120), stop:1 rgb(231,89,236))"
-bar-bg = "rgb(38, 44, 56)"
 """
 
 
