@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QProgressBar, QLabel, QHBoxLayout, QVBoxLayout
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt
-from watchtower.themes.theme_manager import ThemeManager
+from watchtower.theme_manager import ThemeManager
 
 
 class Meter(QWidget):

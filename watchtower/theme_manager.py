@@ -1,9 +1,22 @@
 import weakref
+import platformdirs
+import pathlib
+import tomllib
+from loguru import logger as l
 
 
 class ThemeManager:
     _theme = None
     _listeners = []
+
+    _themes_path = (
+        pathlib.Path(platformdirs.user_config_dir("Watchtower", "Cheetah"))
+        / "themes.toml"
+    )
+    l.info(f"Loading themes from {_themes_path}")
+
+    with open(_themes_path, "rb") as f:
+        _themes = tomllib.load(f)
 
     @classmethod
     def set_theme(cls, name):
@@ -17,15 +30,11 @@ class ThemeManager:
 
     @classmethod
     def get_theme(cls):
-        from watchtower.themes.themes import themes
-
-        return themes[cls._theme]
+        return cls._themes[cls._theme]  # ty:ignore[invalid-argument-type]
 
     @classmethod
     def get_theme_names(cls):
-        from watchtower.themes.themes import themes
-
-        return themes.keys()
+        return cls._themes.keys()
 
     @classmethod
     def register(cls, fn):

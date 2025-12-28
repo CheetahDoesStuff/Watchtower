@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QFont
 
 from watchtower.widgets.section import Section
-from watchtower.themes.theme_manager import ThemeManager
+from watchtower.theme_manager import ThemeManager
 
 
 class Topbar(Section):

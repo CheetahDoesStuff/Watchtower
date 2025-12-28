@@ -2,7 +2,7 @@ from watchtower.widgets.top import Topbar
 from watchtower.widgets.usage import UsageSection
 from watchtower.widgets.disks import DiskSection
 from watchtower.widgets.processes import ProcessSection
-from watchtower.themes.theme_manager import ThemeManager
+from watchtower.theme_manager import ThemeManager
 
 import sys
 

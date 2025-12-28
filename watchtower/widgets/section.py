@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
 )
-from watchtower.themes.theme_manager import ThemeManager
+from watchtower.theme_manager import ThemeManager
 
 
 class Section(QGroupBox):

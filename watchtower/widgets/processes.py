@@ -2,7 +2,7 @@ from watchtower.widgets.section import Section
 from watchtower.widgets.top import ProcessTopbar
 from watchtower.helpers.byte_format import format_bytes
 from watchtower.helpers.spacer_fix import fix_spacers
-from watchtower.themes.theme_manager import ThemeManager
+from watchtower.theme_manager import ThemeManager
 
 import psutil
 from collections import Counter
