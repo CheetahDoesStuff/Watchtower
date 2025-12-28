@@ -3,6 +3,7 @@ from watchtower.widgets.usage import UsageSection
 from watchtower.widgets.disks import DiskSection
 from watchtower.widgets.processes import ProcessSection
 from watchtower.theme_manager import ThemeManager
+from watchtower.config_manager import ConfigManager
 
 import sys
 
@@ -43,7 +44,7 @@ class MainWindow(QMainWindow):
             self.central_layout.addWidget(widget)
 
         ThemeManager.register(self.apply_main_theme)
-        ThemeManager.set_theme("Modern")
+        ThemeManager.set_theme(ConfigManager.get_config()["misc"]["default-theme"])
 
         self.setCentralWidget(self.central)
 

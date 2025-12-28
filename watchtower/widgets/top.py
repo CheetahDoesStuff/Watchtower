@@ -9,13 +9,14 @@ from PyQt6.QtGui import QFont
 
 from watchtower.widgets.section import Section
 from watchtower.theme_manager import ThemeManager
+from watchtower.config_manager import ConfigManager
 
 
 class Topbar(Section):
     def __init__(self):
         super().__init__("", True, True)
 
-        self.title_label = QLabel("Watchtower")
+        self.title_label = QLabel("Wᴀᴛᴄʜᴛᴏᴡᴇʀ")
         title_font = QFont("Arial", 16)
         title_font.setBold(True)
         self.title_label.setFont(title_font)
@@ -23,7 +24,9 @@ class Topbar(Section):
         info_button = QPushButton("Info")
         info_button.clicked.connect(self.open_info)
 
-        self.theme_button = QPushButton("Theme: Modern")
+        self.theme_button = QPushButton(
+            f"Theme: {ConfigManager.get_config()['misc']['default-theme']}"
+        )
         self.theme_button.clicked.connect(self.cycle_themes)
 
         self.addWidget(self.title_label)

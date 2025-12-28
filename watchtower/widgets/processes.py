@@ -3,6 +3,7 @@ from watchtower.widgets.top import ProcessTopbar
 from watchtower.helpers.byte_format import format_bytes
 from watchtower.helpers.spacer_fix import fix_spacers
 from watchtower.theme_manager import ThemeManager
+from watchtower.config_manager import ConfigManager
 
 import psutil
 from collections import Counter
@@ -316,7 +317,7 @@ class ProcessSection(Section):
     def __init__(self):
         super().__init__("Processes")
 
-        self.sort = "RAM"  # CPU or RAM
+        self.sort = ConfigManager.get_config()["misc"]["default-sort"].upper()
 
         self.top_layout = QHBoxLayout()
 
@@ -324,7 +325,7 @@ class ProcessSection(Section):
         self.searchbar.setPlaceholderText("Search processes...")
         self.searchbar.textChanged.connect(self.update_processlist)
 
-        self.sort_button = QPushButton("Sort: RAM")
+        self.sort_button = QPushButton(f"Sort: {self.sort}")
         self.sort_button.clicked.connect(self.update_sort_type)
 
         self.update_button = QPushButton("Update")
