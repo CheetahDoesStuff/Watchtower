@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QProgressBar, QLabel, QHBoxLayout, QVBoxLayout
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt
-from watchtower.vars import themes
+from watchtower.themes.theme_manager import ThemeManager
 
 
 class Meter(QWidget):
@@ -16,9 +16,7 @@ class Meter(QWidget):
         labels_layout.setContentsMargins(0, 0, 0, 0)
 
         self.name = QLabel(label)
-        self.name.setStyleSheet(
-            f"QLabel {{color:  {themes[themes['active_theme']]['text-header']};}}"  # ty:ignore[invalid-argument-type]
-        )
+
         self.big_font = QFont()
         self.big_font.setPointSize(12)
         self.big_font.setBold(True)
@@ -42,19 +40,6 @@ class Meter(QWidget):
         self.progress_bar = QProgressBar()
         self.progress_bar.setValue(0)
         self.progress_bar.setTextVisible(False)
-        self.progress_bar.setStyleSheet(
-            f"""
-            QProgressBar {{
-                background-color: {themes[themes["active_theme"]]["fg-2"]};
-                border: 1px solid {themes[themes["active_theme"]]["border"]};
-                border-radius: 4px;
-            }}
-            QProgressBar::chunk {{
-                background-color: {themes[themes["active_theme"]]["bar-meter"]};
-                border-radius: 4px;
-                border: 0;
-            }}"""  # ty:ignore[invalid-argument-type]
-        )
         self.progress_bar.setSizePolicy(
             self.progress_bar.sizePolicy().horizontalPolicy(),
             self.progress_bar.sizePolicy().verticalPolicy().Expanding,
@@ -68,6 +53,28 @@ class Meter(QWidget):
 
         self.setLayout(main_layout)
 
+        ThemeManager.register(self.apply_meter_theme)
+
     def set(self, val):
         self.value = min(val, 100)
         self.progress_bar.setValue(self.value)
+
+    def apply_meter_theme(self):
+        t = ThemeManager.get_theme()
+        self.progress_bar.setStyleSheet(
+            f"""
+            QProgressBar {{
+                background-color: {t["fg-2"]};
+                border: 1px solid {t["border"]};
+                border-radius: 4px;
+            }}
+            QProgressBar::chunk {{
+                background-color: {t["bar-meter"]};
+                border-radius: 4px;
+                border: 0;
+            }}"""  # ty:ignore[invalid-argument-type]
+        )
+
+        self.name.setStyleSheet(
+            f"QLabel {{color:  {t['text-header']};}}"  # ty:ignore[invalid-argument-type]
+        )

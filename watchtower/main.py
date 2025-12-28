@@ -2,7 +2,7 @@ from watchtower.widgets.top import Topbar
 from watchtower.widgets.usage import UsageSection
 from watchtower.widgets.disks import DiskSection
 from watchtower.widgets.processes import ProcessSection
-from watchtower.vars import themes
+from watchtower.themes.theme_manager import ThemeManager
 
 import sys
 
@@ -21,29 +21,12 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("WatchTower - Taskmanager And System Monitor")
 
-        central = QWidget()
-        central.setObjectName("Main")
-        central.setContentsMargins(0, 0, 0, 0)
-        central.setStyleSheet(
-            f"""
-        QWidget#Main {{
-            padding: 0;
-        }}
-        QWidget#Main, QWidget#Main * {{
-            background: {themes[themes["active_theme"]]["bg"]};
-            color: {themes[themes["active_theme"]]["text"]};
-        }}
-        QWidget#Main QPushButton {{
-            background: {themes[themes["active_theme"]]["button-bg"]};
-            border: 1px solid {themes[themes["active_theme"]]["border"]};
-            border-radius: 4px;
-            padding: 3px 12px 3px 12px;
-        }}
-        """  # ty:ignore[invalid-argument-type]
-        )
+        self.central = QWidget()
+        self.central.setObjectName("Main")
+        self.central.setContentsMargins(0, 0, 0, 0)
 
-        central_layout = QVBoxLayout()
-        central.setLayout(central_layout)
+        self.central_layout = QVBoxLayout()
+        self.central.setLayout(self.central_layout)
 
         self.sections = [Topbar(), UsageSection(), DiskSection(), ProcessSection()]
 
@@ -57,9 +40,33 @@ class MainWindow(QMainWindow):
                 widget.setSizePolicy(
                     widget.sizePolicy().horizontalPolicy(), QSizePolicy.Policy.Fixed
                 )
-            central_layout.addWidget(widget)
+            self.central_layout.addWidget(widget)
 
-        self.setCentralWidget(central)
+        ThemeManager.register(self.apply_main_theme)
+        ThemeManager.set_theme("Modern")
+
+        self.setCentralWidget(self.central)
+
+    def apply_main_theme(self):
+        t = ThemeManager.get_theme()
+
+        self.central.setStyleSheet(
+            f"""
+        QWidget#Main {{
+            padding: 0;
+        }}
+        QWidget#Main, QWidget#Main * {{
+            background: {t["bg"]};
+            color: {t["text"]};
+        }}
+        QWidget#Main QPushButton {{
+            background: {t["button-bg"]};
+            border: 1px solid {t["border"]};
+            border-radius: 4px;
+            padding: 3px 12px 3px 12px;
+        }}
+        """  # ty:ignore[invalid-argument-type]
+        )
 
 
 def main():

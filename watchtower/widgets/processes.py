@@ -2,7 +2,7 @@ from watchtower.widgets.section import Section
 from watchtower.widgets.top import ProcessTopbar
 from watchtower.helpers.byte_format import format_bytes
 from watchtower.helpers.spacer_fix import fix_spacers
-from watchtower.vars import themes
+from watchtower.themes.theme_manager import ThemeManager
 
 import psutil
 from collections import Counter
@@ -134,18 +134,6 @@ class ProcessStats(QDialog):
         self.setWindowTitle(f"{parent.name} Stats - Watchtower")
         self.resize(400, 300)
 
-        self.setStyleSheet(
-            f"""
-        QWidget, QWidget * {{
-            background: {themes[themes["active_theme"]]["bg"]};
-            color: {themes[themes["active_theme"]]["text"]};
-        }}
-        QPushButton {{
-            background: {themes[themes["active_theme"]]["button-bg"]};
-        }}
-        """  # ty:ignore[invalid-argument-type]
-        )
-
         self.main_layout = QVBoxLayout()
 
         self.main_layout.addWidget(ProcessTopbar(parent.name, self.close))
@@ -155,6 +143,7 @@ class ProcessStats(QDialog):
         )
 
         self.setLayout(self.main_layout)
+        ThemeManager.register(self.apply_process_stats_theme)
 
     def closeEvent(self, event):  # ty:ignore[invalid-method-override]
         self.parent().stats_window = None  # ty:ignore[invalid-assignment]
@@ -166,6 +155,20 @@ class ProcessStats(QDialog):
             self.close()
         else:
             super().keyPressEvent(event)
+
+    def apply_process_stats_theme(self):
+        t = ThemeManager.get_theme()
+        self.setStyleSheet(
+            f"""
+        QWidget, QWidget * {{
+            background: {t["bg"]};
+            color: {t["text"]};
+        }}
+        QPushButton {{
+            background: {t["button-bg"]};
+        }}
+        """  # ty:ignore[invalid-argument-type]
+        )
 
 
 class Process(QFrame):
@@ -193,26 +196,6 @@ class Process(QFrame):
         self.ram_bytes = 0
         self.ram = 0
 
-        self.setObjectName("processFrame")
-        self.setStyleSheet(
-            f"""
-            QFrame#processFrame {{
-                background-color: {themes[themes["active_theme"]]["fg-2"]};
-                border: 1px solid {themes[themes["active_theme"]]["border"]};
-                border-radius: 4px;
-                margin: 1px;
-                margin-right: 5px;
-            }}
-            QFrame#processFrame * {{
-                background-color: {themes[themes["active_theme"]]["fg-2"]};
-            }}
-            QFrame#processFrame QPushButton {{
-                background-color: {themes[themes["active_theme"]]["button-bg"]};
-                border: 1px solid {themes[themes["active_theme"]]["border"]};
-            }}
-            """  # ty:ignore[invalid-argument-type]
-        )
-
         self.main_layout = QHBoxLayout()
 
         self.name_label = QLabel(name)
@@ -227,13 +210,6 @@ class Process(QFrame):
         self.stats_button.clicked.connect(self.open_stats)
 
         self.nuke_button = QPushButton(text="NUKE")
-        self.nuke_button.setStyleSheet(
-            f"""
-            QPushButton {{
-                background-color: {themes[themes["active_theme"]]["button-kill-bg"]};
-            }}
-            """  # ty:ignore[invalid-argument-type]
-        )
         self.nuke_button.clicked.connect(self.nuke_dialog)
 
         self.main_layout.addWidget(self.name_label)
@@ -246,6 +222,8 @@ class Process(QFrame):
         self.main_layout.addWidget(self.nuke_button)
 
         self.setLayout(self.main_layout)
+        ThemeManager.register(self.apply_process_theme)
+        self.apply_process_theme()
 
         QTimer.singleShot(100, self.update_usage)
 
@@ -303,6 +281,36 @@ class Process(QFrame):
             self.stats_window = ProcessStats(self)
             self.stats_window.show()
 
+    def apply_process_theme(self):
+        t = ThemeManager.get_theme()
+        self.setObjectName("processFrame")
+        self.setStyleSheet(
+            f"""
+            QFrame#processFrame {{
+                background-color: {t["fg-2"]};
+                border: 1px solid {t["border"]};
+                border-radius: 4px;
+                margin: 1px;
+                margin-right: 5px;
+            }}
+            QFrame#processFrame * {{
+                background-color: {t["fg-2"]};
+            }}
+            QFrame#processFrame QPushButton {{
+                background-color: {t["button-bg"]};
+                border: 1px solid {t["border"]};
+            }}
+            """  # ty:ignore[invalid-argument-type]
+        )
+
+        self.nuke_button.setStyleSheet(
+            f"""
+            QPushButton {{
+                background-color: {t["button-kill-bg"]};
+            }}
+            """  # ty:ignore[invalid-argument-type]
+        )
+
 
 class ProcessSection(Section):
     def __init__(self):
@@ -338,33 +346,6 @@ class ProcessSection(Section):
         self.process_area.setSizePolicy(
             QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
         )
-        self.process_area.setStyleSheet(
-            f"""
-            QScrollArea {{
-                border: none;
-            }}
-
-            QScrollBar * {{
-                border-radius: 5px;
-            }}
-
-            QScrollBar:vertical {{
-                background-color: {themes[themes["active_theme"]]["fg-2"]};
-                width: 10px;
-                border-radius: 5px;
-            }}
-
-            QScrollBar::handle:vertical {{
-                background: {themes[themes["active_theme"]]["fg-3"]};
-                border-radius: 5px;
-            }}
-
-            QScrollBar::add-line:vertical,
-            QScrollBar::sub-line:vertical {{
-                height: 0;
-            }}
-            """  # ty:ignore[invalid-argument-type]
-        )
 
         self.process_container = QWidget()
 
@@ -379,6 +360,7 @@ class ProcessSection(Section):
         QTimer.singleShot(200, self.update_processes)
         QTimer.singleShot(400, self.sort_processlist)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        ThemeManager.register(self.apply_process_section_theme)
 
         timer = QTimer(self)
         timer.timeout.connect(self.sort_processlist)
@@ -492,3 +474,34 @@ class ProcessSection(Section):
         self.sort = "RAM" if self.sort == "CPU" else "CPU"
         self.sort_button.setText(f"Sort: {self.sort}")
         self.sort_processlist()
+
+    def apply_process_section_theme(self):
+        t = ThemeManager.get_theme()
+
+        self.process_area.setStyleSheet(
+            f"""
+            QScrollArea {{
+                border: none;
+            }}
+
+            QScrollBar * {{
+                border-radius: 5px;
+            }}
+
+            QScrollBar:vertical {{
+                background-color: {t["fg-2"]};
+                width: 10px;
+                border-radius: 5px;
+            }}
+
+            QScrollBar::handle:vertical {{
+                background: {t["fg-3"]};
+                border-radius: 5px;
+            }}
+
+            QScrollBar::add-line:vertical,
+            QScrollBar::sub-line:vertical {{
+                height: 0;
+            }}
+            """  # ty:ignore[invalid-argument-type]
+        )
