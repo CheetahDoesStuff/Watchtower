@@ -25,12 +25,14 @@ A task manager & system monitor - done right
 
 ## Installation
 **Note: This will not work until the first release of watchtower**
+
 You can install it from pypi using a tool of your choice, some examples are:
 * pip: `pip install watchtower`
 * pipx: `pipx install watchtower`
 * uv: `uv tool install watchtower`
 
 then you can launch the app by running `watchtower` in your terminal!
+
 **Note: launching through an application launcher / start menu is coming soon**
 
 ## Configuration
