@@ -43,7 +43,17 @@ class Meter(QWidget):
         self.progress_bar.setValue(0)
         self.progress_bar.setTextVisible(False)
         self.progress_bar.setStyleSheet(
-            f"QProgressBar::chunk {{background-color:  {themes[themes['active_theme']]['bar-meter']}; border-radius: 4px;}}"  # ty:ignore[invalid-argument-type]
+            f"""
+            QProgressBar {{
+                background-color: {themes[themes["active_theme"]]["fg-2"]};
+                border: 1px solid {themes[themes["active_theme"]]["border"]};
+                border-radius: 4px;
+            }}
+            QProgressBar::chunk {{
+                background-color: {themes[themes["active_theme"]]["bar-meter"]};
+                border-radius: 4px;
+                border: 0;
+            }}"""  # ty:ignore[invalid-argument-type]
         )
         self.progress_bar.setSizePolicy(
             self.progress_bar.sizePolicy().horizontalPolicy(),

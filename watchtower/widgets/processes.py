@@ -197,14 +197,18 @@ class Process(QFrame):
         self.setStyleSheet(
             f"""
             QFrame#processFrame {{
-                background-color: {themes[themes["active_theme"]]["bg-2"]};
-                border: 1px solid {themes[themes["active_theme"]]["section-border"]};
+                background-color: {themes[themes["active_theme"]]["fg-2"]};
+                border: 1px solid {themes[themes["active_theme"]]["border"]};
                 border-radius: 4px;
                 margin: 1px;
                 margin-right: 5px;
             }}
             QFrame#processFrame * {{
-                background-color: {themes[themes["active_theme"]]["bg-2"]};
+                background-color: {themes[themes["active_theme"]]["fg-2"]};
+            }}
+            QFrame#processFrame QPushButton {{
+                background-color: {themes[themes["active_theme"]]["button-bg"]};
+                border: 1px solid {themes[themes["active_theme"]]["border"]};
             }}
             """  # ty:ignore[invalid-argument-type]
         )
@@ -335,11 +339,31 @@ class ProcessSection(Section):
             QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
         )
         self.process_area.setStyleSheet(
+            f"""
+            QScrollArea {{
+                border: none;
+            }}
+
+            QScrollBar * {{
+                border-radius: 5px;
+            }}
+
+            QScrollBar:vertical {{
+                background-color: {themes[themes["active_theme"]]["fg-2"]};
+                width: 10px;
+                border-radius: 5px;
+            }}
+
+            QScrollBar::handle:vertical {{
+                background: {themes[themes["active_theme"]]["fg-3"]};
+                border-radius: 5px;
+            }}
+
+            QScrollBar::add-line:vertical,
+            QScrollBar::sub-line:vertical {{
+                height: 0;
+            }}
             """
-        QScrollArea {
-        border: none;
-        }
-        """
         )
 
         self.process_container = QWidget()

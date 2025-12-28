@@ -23,14 +23,21 @@ class MainWindow(QMainWindow):
 
         central = QWidget()
         central.setObjectName("Main")
+        central.setContentsMargins(0, 0, 0, 0)
         central.setStyleSheet(
             f"""
+        QWidget#Main {{
+            padding: 0;
+        }}
         QWidget#Main, QWidget#Main * {{
             background: {themes[themes["active_theme"]]["bg"]};
             color: {themes[themes["active_theme"]]["text"]};
         }}
-        QPushButton {{
+        QWidget#Main QPushButton {{
             background: {themes[themes["active_theme"]]["button-bg"]};
+            border: 1px solid {themes[themes["active_theme"]]["border"]};
+            border-radius: 4px;
+            padding: 3px 12px 3px 12px;
         }}
         """  # ty:ignore[invalid-argument-type]
         )

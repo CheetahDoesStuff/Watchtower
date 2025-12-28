@@ -1,10 +1,15 @@
-from PyQt6.QtWidgets import QGroupBox, QVBoxLayout, QHBoxLayout
+from PyQt6.QtWidgets import (
+    QGroupBox,
+    QVBoxLayout,
+    QHBoxLayout,
+)
 from watchtower.vars import themes
 
 
 class Section(QGroupBox):
-    def __init__(self, title: str, horizontal: bool = False):
+    def __init__(self, title: str, horizontal: bool = False, is_top: bool = False):
         super().__init__(title)
+        self.setContentsMargins(0, 0, 0, 0)
 
         if horizontal:
             layout = QHBoxLayout()
@@ -16,18 +21,30 @@ class Section(QGroupBox):
         self.setStyleSheet(
             f"""
         QGroupBox {{
-            border: 1px solid {themes[themes["active_theme"]]["section-border"]};
+            border: 1px solid {themes[themes["active_theme"]]["border"]};
+            background-color: {themes[themes["active_theme"]]["fg-1"]};
             border-radius: 4px;
-            margin-top: 10px;
+            margin-top: {"0" if is_top else "6"}px;
+        }}
+
+        QGroupBox * {{
+            background-color: {themes[themes["active_theme"]]["fg-1"]};
+        }}
+
+        QGroupBox QPushButton {{
+            background-color: {themes[themes["active_theme"]]["fg-2"]};
+        }}
+
+        QGroupBox QLineEdit {{
+            background-color: {themes[themes["active_theme"]]["fg-2"]};
+            border: 1px solid {themes[themes["active_theme"]]["border"]};
+            border-radius: 4px;
+            padding: 2px;
         }}
 
         QGroupBox::title {{
-            subcontrol-origin: border;
-            subcontrol-position: top left;
-            left: 10px;
-            padding: 0 6px;
-            top: -8px;
-            background-color: {themes[themes["active_theme"]]["bg"]};
+            color: transparent;
+            background: transparent;
         }}
         """  # ty:ignore[invalid-argument-type]
         )

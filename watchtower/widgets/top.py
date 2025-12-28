@@ -13,7 +13,7 @@ from watchtower.vars import themes
 
 class Topbar(Section):
     def __init__(self):
-        super().__init__("", True)
+        super().__init__("", True, True)
 
         title_label = QLabel("Watchtower")
         title_font = QFont("Arial", 16)
