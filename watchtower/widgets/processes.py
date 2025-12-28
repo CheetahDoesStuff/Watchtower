@@ -363,7 +363,7 @@ class ProcessSection(Section):
             QScrollBar::sub-line:vertical {{
                 height: 0;
             }}
-            """
+            """  # ty:ignore[invalid-argument-type]
         )
 
         self.process_container = QWidget()
