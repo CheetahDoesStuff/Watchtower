@@ -2,7 +2,6 @@
 A task manager & system monitor - done right
 
 ## Features
-### Implemented features
 * Resource usage (updating live)
 * Disk space (Used and availble)
 * List of all processes running (updates every second)
@@ -13,15 +12,6 @@ A task manager & system monitor - done right
   * Searching the processlist
 * Customization through themes (config based)
 * Config with a growing amount of values to configure
-
-### Planned features
-* last 24h/1w wrapped showing:
-  * process with most instances
-  * process with most cpu/ram usage
-  * process with most read/write usage
-  * how long your computer has been running
-  * how many times youve opened watchtower
-  * how long youve had watchtower open
 
 ## Installation
 **Note: This will not work until the first release of watchtower, you can still manually install the source from the repo but i recommend you wait for a release!**
