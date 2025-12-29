@@ -1,6 +1,10 @@
 # Watchtower
 A task manager & system monitor - done right
 
+TODO: 
+Move from lsblk to psutil for disk information (windows says nuuh)
+ConfigManager doesnt fall back to defaults????
+
 ## Features
 * Resource usage (updating live)
 * Disk space (Used and availble)
