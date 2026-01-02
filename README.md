@@ -1,9 +1,7 @@
 # Watchtower
 A task manager & system monitor - done right
 
-TODO: 
-Move from lsblk to psutil for disk information (windows says nuuh)
-ConfigManager doesnt fall back to defaults????
+**NOTE: Watchtower is a linux application and should not be installed on a windows system, reported bugs about features not working or crashes / errors on windows will not be fixed.**
 
 ## Features
 * Resource usage (updating live)
@@ -20,12 +18,12 @@ ConfigManager doesnt fall back to defaults????
 ## Installation
 **Note: This will not work until the first release of watchtower, you can still manually install the source from the repo but i recommend you wait for a release!**
 You can install it from pypi using a tool of your choice, some examples are:
-* pip: `pip install watchtower`
-* pipx: `pipx install watchtower`
-* uv: `uv tool install watchtower`
+* pip: `pip install watchtower-app`
+* pipx: `pipx install watchtower-app`
+* uv: `uv tool install watchtower-app`
 
-then you can launch the app by running `watchtower` in your terminal!
-**Note: launching through an application launcher / start menu is coming soon**
+Then you can launch the app by running `watchtower` in your terminal!
+To make application launchers (Like rofi) and DE startmenus (KDE, Gnome etc) recognize and show the application a little more setup is needed, but fear not! Ive made it as easy as possible and you only have to run `watchtower-install` for it to work!
 
 ## Configuration
 ### Where are the config files?
