@@ -16,7 +16,6 @@ A task manager & system monitor - done right
 * Config with a growing amount of values to configure
 
 ## Installation
-**Note: This will not work until the first release of watchtower, you can still manually install the source from the repo but i recommend you wait for a release!**
 You can install it from pypi using a tool of your choice, some examples are:
 * pip: `pip install watchtower-app`
 * pipx: `pipx install watchtower-app`
